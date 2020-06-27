@@ -2,9 +2,9 @@ mod vec3d;
 mod colour;
 mod ray;
 use crate::vec3d::{Vec3D, Colour, Point3D};
-use crate::colour::write_colour;
+use crate::colour::get_colour;
 use crate::ray::Ray;
-// use rayon::prelude::*;
+use rayon::prelude::*;
 
 fn hit_sphere(center: &Point3D, radius: f32, r: &Ray) -> bool {
     // t: ray scalar. want to solve for this.
@@ -55,16 +55,23 @@ fn main() {
     let separation = Vec3D::new(0., 0., focal_length);
     let lower_left_corner: Point3D = origin - horizontal / 2. - vertical / 2. - separation;
 
+    let pixels = (0..image_height).into_par_iter()
+        .rev()
+        .map(|h| {
+            (0..image_width).into_par_iter()
+                .map(|w| {
+                    let u = (w as f32) / (image_width - 1) as f32;
+                    let v = (h as f32) / (image_height - 1) as f32;
+                    let r = Ray::new(origin, lower_left_corner + u * horizontal + v * vertical - origin);
+                    let pixel_colour: Colour = ray_colour(&r);
+                    get_colour(pixel_colour)
+                })
+                .collect::<Vec<_>>()
+                .join("")
+        })
+        .collect::<Vec<_>>()
+        .join("");
 
-    for j in (0..image_height).rev() {
-        eprintln!("\rLines remaining: {}", j);
-        for i in 0..image_width {
-            let u = (i as f32) / (image_width - 1) as f32;
-            let v = (j as f32) / (image_height - 1) as f32;
-            let r = Ray::new(origin, lower_left_corner + u * horizontal + v * vertical - origin);
-            let pixel_colour: Colour = ray_colour(&r);
-            write_colour(pixel_colour);
-        }
-    }
+    print!("{}", pixels);
     eprintln!("\nDone.");
 }
