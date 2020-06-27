@@ -1,4 +1,6 @@
-use std::ops::{Neg, Index, Add, AddAssign, Sub, SubAssign, Mul, MulAssign, Div, DivAssign};
+//use std::ops::{Neg, Index, Add, AddAssign, Sub, SubAssign, Mul, MulAssign, Div, DivAssign};
+use std::ops;
+use impl_ops::*;
 
 #[derive(Debug, Copy, Clone)]
 pub struct Vec3D(f32, f32, f32);
@@ -37,7 +39,7 @@ pub fn unit_vector(u: &Vec3D) -> Vec3D {
 
 // - operator
 
-impl Neg for Vec3D {
+impl ops::Neg for Vec3D {
     type Output = Vec3D;
 
     fn neg(self) -> Self::Output {
@@ -47,7 +49,7 @@ impl Neg for Vec3D {
 
 // Vec3D[indexing] 
 
-impl Index<usize> for Vec3D {
+impl ops::Index<usize> for Vec3D {
     type Output = f32;
 
     fn index(&self, idx: usize) -> &Self::Output {
@@ -62,31 +64,33 @@ impl Index<usize> for Vec3D {
 
 // Add methods
 
-impl Add for Vec3D {
-    type Output = Self;
+impl_op_ex!(+ |u: Vec3D, v: Vec3D| -> Vec3D { Vec3D(u.0 + v.0, u.1 + v.1, u.2 + v.2)});
+// impl Add for Vec3D {
+//     type Output = Self;
+// 
+//     fn add(self, v: Self) -> Self {
+//         Self (
+//             self.0 + v.0,
+//             self.1 + v.1,
+//             self.2 + v.2,
+//         )
+//     }
+// }
 
-    fn add(self, v: Self) -> Self {
-        Self (
-            self.0 + v.0,
-            self.1 + v.1,
-            self.2 + v.2,
-        )
-    }
-}
-
-impl Add<f32> for Vec3D {
-    type Output = Self;
-
-    fn add(self, scalar: f32) -> Self {
-        Self (
-            self.0 * scalar,
-            self.1 * scalar,
-            self.2 * scalar,
-        )
-    }
-}
-
-impl AddAssign for Vec3D {
+impl_op_ex_commutative!(+ |u: Vec3D, t: f32| -> Vec3D { Vec3D(u.0 + t, u.1 + t, u.2 + t) });
+// impl Add<f32> for Vec3D {
+//     type Output = Self;
+// 
+//     fn add(self, scalar: f32) -> Self {
+//         Self (
+//             self.0 * scalar,
+//             self.1 * scalar,
+//             self.2 * scalar,
+//         )
+//     }
+// }
+ 
+impl ops::AddAssign for Vec3D {
     fn add_assign(&mut self, v: Self) {
         *self = Self (
             self.0 + v.0,
@@ -95,7 +99,7 @@ impl AddAssign for Vec3D {
         )
     }
 }
-impl AddAssign<f32> for Vec3D {
+impl ops::AddAssign<f32> for Vec3D {
     fn add_assign(&mut self, scalar: f32) {
         *self = Self (
             self.0 + scalar,
@@ -106,31 +110,33 @@ impl AddAssign<f32> for Vec3D {
 }
 
 // Subtract methods
-impl Sub for Vec3D {
-    type Output = Self;
+impl_op_ex!(- |u: Vec3D, v: Vec3D| -> Vec3D { Vec3D(u.0 - v.0, u.1 - v.1, u.2 - v.2)});
+// impl ops::Sub for Vec3D {
+//     type Output = Self;
+// 
+//     fn sub(self, v: Self) -> Self {
+//         Self (
+//             self.0 - v.0,
+//             self.1 - v.1,
+//             self.2 - v.2,
+//         )
+//     }
+// }
+// 
+impl_op_ex_commutative!(- |u: Vec3D, t: f32| -> Vec3D { Vec3D(u.0 - t, u.1 - t, u.2 - t) });
+// impl ops::Sub<f32> for Vec3D {
+//     type Output = Self;
+// 
+//     fn sub(self, scalar: f32) -> Self {
+//         Self (
+//             self.0 * scalar,
+//             self.1 * scalar,
+//             self.2 * scalar,
+//         )
+//     }
+// }
 
-    fn sub(self, v: Self) -> Self {
-        Self (
-            self.0 - v.0,
-            self.1 - v.1,
-            self.2 - v.2,
-        )
-    }
-}
-
-impl Sub<f32> for Vec3D {
-    type Output = Self;
-
-    fn sub(self, scalar: f32) -> Self {
-        Self (
-            self.0 * scalar,
-            self.1 * scalar,
-            self.2 * scalar,
-        )
-    }
-}
-
-impl SubAssign for Vec3D {
+impl ops::SubAssign for Vec3D {
     fn sub_assign(&mut self, v: Self) {
         *self = Self (
             self.0 - v.0,
@@ -139,7 +145,7 @@ impl SubAssign for Vec3D {
         )
     }
 }
-impl SubAssign<f32> for Vec3D {
+impl ops::SubAssign<f32> for Vec3D {
     fn sub_assign(&mut self, scalar: f32) {
         *self = Self (
             self.0 - scalar,
@@ -151,31 +157,33 @@ impl SubAssign<f32> for Vec3D {
 
 // Multiplication methods 
 
-impl Mul for Vec3D {
-    type Output = Self;
+impl_op_ex!(* |u: Vec3D, v: Vec3D| -> Vec3D { Vec3D(u.0 * v.0, u.1 * v.1, u.2 * v.2)});
+// impl ops::Mul for Vec3D {
+//     type Output = Self;
+// 
+//     fn mul(self, v: Self) -> Self {
+//         Self (
+//             self.0 * v.0,
+//             self.1 * v.1,
+//             self.2 * v.2,
+//         )
+//     }
+// }
+// 
+impl_op_ex_commutative!(* |u: Vec3D, t: f32| -> Vec3D { Vec3D(u.0 * t, u.1 * t, u.2 * t) });
+// impl ops::Mul<f32> for Vec3D {
+//     type Output = Self;
+// 
+//     fn mul(self, scalar: f32) -> Self {
+//         Self (
+//             self.0 * scalar,
+//             self.1 * scalar,
+//             self.2 * scalar,
+//         )
+//     }
+// }
 
-    fn mul(self, v: Self) -> Self {
-        Self (
-            self.0 * v.0,
-            self.1 * v.1,
-            self.2 * v.2,
-        )
-    }
-}
-
-impl Mul<f32> for Vec3D {
-    type Output = Self;
-
-    fn mul(self, scalar: f32) -> Self {
-        Self (
-            self.0 * scalar,
-            self.1 * scalar,
-            self.2 * scalar,
-        )
-    }
-}
-
-impl MulAssign for Vec3D {
+impl ops::MulAssign for Vec3D {
     fn mul_assign(&mut self, v: Self) {
         *self = Self (
             self.0 * v.0,
@@ -185,7 +193,7 @@ impl MulAssign for Vec3D {
     }
 }
 
-impl MulAssign<f32> for Vec3D {
+impl ops::MulAssign<f32> for Vec3D {
     fn mul_assign(&mut self, scalar: f32) {
         *self = Self (
             self.0 * scalar,
@@ -197,31 +205,33 @@ impl MulAssign<f32> for Vec3D {
 
 // Division methods 
 
-impl Div for Vec3D {
-    type Output = Self;
+impl_op_ex!(/ |u: Vec3D, v: Vec3D| -> Vec3D { Vec3D(u.0 / v.0, u.1 / v.1, u.2 / v.2)});
+// impl ops::Div for Vec3D {
+//     type Output = Self;
+// 
+//     fn div(self, v: Self) -> Self {
+//         Self (
+//             self.0 / v.0,
+//             self.1 / v.1,
+//             self.2 / v.2,
+//         )
+//     }
+// }
+// 
+impl_op_ex_commutative!(/ |u: Vec3D, t: f32| -> Vec3D { Vec3D(u.0 / t, u.1 / t, u.2 / t) });
+// impl ops::Div<f32> for Vec3D {
+//     type Output = Self;
+// 
+//     fn div(self, scalar: f32) -> Self {
+//         Self (
+//             self.0 / scalar,
+//             self.1 / scalar,
+//             self.2 / scalar,
+//         )
+//     }
+// }
 
-    fn div(self, v: Self) -> Self {
-        Self (
-            self.0 / v.0,
-            self.1 / v.1,
-            self.2 / v.2,
-        )
-    }
-}
-
-impl Div<f32> for Vec3D {
-    type Output = Self;
-
-    fn div(self, scalar: f32) -> Self {
-        Self (
-            self.0 / scalar,
-            self.1 / scalar,
-            self.2 / scalar,
-        )
-    }
-}
-
-impl DivAssign for Vec3D {
+impl ops::DivAssign for Vec3D {
     fn div_assign(&mut self, v: Self) {
         *self = Self (
             self.0 / v.0,
@@ -231,7 +241,7 @@ impl DivAssign for Vec3D {
     }
 }
 
-impl DivAssign<f32> for Vec3D {
+impl ops::DivAssign<f32> for Vec3D {
     fn div_assign(&mut self, scalar: f32) {
         *self = Self (
             self.0 / scalar,
