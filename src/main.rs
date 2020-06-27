@@ -6,7 +6,7 @@ use crate::colour::get_colour;
 use crate::ray::Ray;
 use rayon::prelude::*;
 
-fn hit_sphere(center: &Point3D, radius: f32, r: &Ray) -> bool {
+fn hit_sphere(center: &Point3D, radius: f32, r: &Ray) -> f32 {
     // t: ray scalar. want to solve for this.
     // B: ray direction.
     // A: ray origin.
@@ -21,15 +21,23 @@ fn hit_sphere(center: &Point3D, radius: f32, r: &Ray) -> bool {
     // b = 2*B.(A-C)
     // c = (A-C).(A-C) - r^2
     let sep: Vec3D = r.origin() - center;
-    let a = r.direction().dot(&r.direction());
-    let b = 2. * r.direction().dot(&sep);
-    let c = sep.dot(&sep) - radius * radius;
-    b * b - 4. * a * c > 0.
+    let a: f32 = r.direction().dot(&r.direction());
+    let b: f32 = 2. * r.direction().dot(&sep);
+    let c: f32 = sep.dot(&sep) - radius * radius;
+    let discriminant: f32 = b * b - 4. * a * c;
+    if discriminant < 0. {
+        -1.
+    } else {
+        -b - discriminant.sqrt() / (2. * a)
+    }
 }
 
 fn ray_colour(r: &Ray) -> Colour {
-    if hit_sphere(&Point3D::new(0., 0., -1.), 0.5, r) {
-        return Colour::new(1., 0., 0.);
+    let sphere_origin = Point3D::new(0., 0., -1.);
+    let t: f32 = hit_sphere(&sphere_origin, 0.5, r);
+    if t > 0. {
+        let normal: Vec3D = (r.at(t) - sphere_origin).unit_vector();
+        return 0.5 * Colour::from(normal + 1.);
     }
     let unit_dir = r.direction().unit_vector();
     let t = 0.5 * (unit_dir.y() + 1.);
