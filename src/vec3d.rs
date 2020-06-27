@@ -18,23 +18,19 @@ impl Vec3D {
     pub fn length_squared(&self) -> f32 {
         self.length() * self.length()
     }
-    
-}
-
-// Various vector functions
-
-pub fn dot(u: &Vec3D, v: &Vec3D) -> f32 {
-    (u.0 * v.0) + (u.1 * v.1) + (u.2 * v.2)
-}
-pub fn cross(u: &Vec3D, v:&Vec3D) -> Vec3D {
-    Vec3D (
-        u.1 * v.2 - u.2 * v.1,
-        u.2 * v.0 - u.0 * v.2,
-        u.0 * v.1 - u.1 * v.0,
-    )
-}
-pub fn unit_vector(u: &Vec3D) -> Vec3D {
-   *u / u.length()
+    pub fn dot(&self, other: &Vec3D) -> f32 {
+        (self.0 * other.0) + (self.1 * other.1) + (self.2 * other.2)
+    }
+    pub fn cross(&self, other: &Vec3D) -> Vec3D {
+        Vec3D (
+            self.1 * other.2 - self.2 * other.1,
+            self.2 * other.0 - self.0 * other.2,
+            self.0 * other.1 - self.1 * other.0,
+        )
+    }
+    pub fn unit_vector(&self) -> Vec3D {
+        *self / self.length()
+    }
 }
 
 // - operator
@@ -64,7 +60,7 @@ impl ops::Index<usize> for Vec3D {
 
 // Add methods
 
-impl_op_ex!(+ |u: Vec3D, v: Vec3D| -> Vec3D { Vec3D(u.0 + v.0, u.1 + v.1, u.2 + v.2)});
+impl_op_ex!(+ |u: &Vec3D, v: &Vec3D| -> Vec3D { Vec3D(u.0 + v.0, u.1 + v.1, u.2 + v.2)});
 // impl Add for Vec3D {
 //     type Output = Self;
 // 
@@ -77,7 +73,7 @@ impl_op_ex!(+ |u: Vec3D, v: Vec3D| -> Vec3D { Vec3D(u.0 + v.0, u.1 + v.1, u.2 + 
 //     }
 // }
 
-impl_op_ex_commutative!(+ |u: Vec3D, t: f32| -> Vec3D { Vec3D(u.0 + t, u.1 + t, u.2 + t) });
+impl_op_ex_commutative!(+ |u: &Vec3D, t: f32| -> Vec3D { Vec3D(u.0 + t, u.1 + t, u.2 + t) });
 // impl Add<f32> for Vec3D {
 //     type Output = Self;
 // 
@@ -110,7 +106,7 @@ impl ops::AddAssign<f32> for Vec3D {
 }
 
 // Subtract methods
-impl_op_ex!(- |u: Vec3D, v: Vec3D| -> Vec3D { Vec3D(u.0 - v.0, u.1 - v.1, u.2 - v.2)});
+impl_op_ex!(- |u: &Vec3D, v: &Vec3D| -> Vec3D { Vec3D(u.0 - v.0, u.1 - v.1, u.2 - v.2)});
 // impl ops::Sub for Vec3D {
 //     type Output = Self;
 // 
@@ -123,7 +119,7 @@ impl_op_ex!(- |u: Vec3D, v: Vec3D| -> Vec3D { Vec3D(u.0 - v.0, u.1 - v.1, u.2 - 
 //     }
 // }
 // 
-impl_op_ex_commutative!(- |u: Vec3D, t: f32| -> Vec3D { Vec3D(u.0 - t, u.1 - t, u.2 - t) });
+impl_op_ex_commutative!(- |u: &Vec3D, t: f32| -> Vec3D { Vec3D(u.0 - t, u.1 - t, u.2 - t) });
 // impl ops::Sub<f32> for Vec3D {
 //     type Output = Self;
 // 
@@ -157,7 +153,7 @@ impl ops::SubAssign<f32> for Vec3D {
 
 // Multiplication methods 
 
-impl_op_ex!(* |u: Vec3D, v: Vec3D| -> Vec3D { Vec3D(u.0 * v.0, u.1 * v.1, u.2 * v.2)});
+impl_op_ex!(* |u: &Vec3D, v: &Vec3D| -> Vec3D { Vec3D(u.0 * v.0, u.1 * v.1, u.2 * v.2)});
 // impl ops::Mul for Vec3D {
 //     type Output = Self;
 // 
@@ -170,7 +166,7 @@ impl_op_ex!(* |u: Vec3D, v: Vec3D| -> Vec3D { Vec3D(u.0 * v.0, u.1 * v.1, u.2 * 
 //     }
 // }
 // 
-impl_op_ex_commutative!(* |u: Vec3D, t: f32| -> Vec3D { Vec3D(u.0 * t, u.1 * t, u.2 * t) });
+impl_op_ex_commutative!(* |u: &Vec3D, t: f32| -> Vec3D { Vec3D(u.0 * t, u.1 * t, u.2 * t) });
 // impl ops::Mul<f32> for Vec3D {
 //     type Output = Self;
 // 
@@ -205,7 +201,7 @@ impl ops::MulAssign<f32> for Vec3D {
 
 // Division methods 
 
-impl_op_ex!(/ |u: Vec3D, v: Vec3D| -> Vec3D { Vec3D(u.0 / v.0, u.1 / v.1, u.2 / v.2)});
+impl_op_ex!(/ |u: &Vec3D, v: &Vec3D| -> Vec3D { Vec3D(u.0 / v.0, u.1 / v.1, u.2 / v.2)});
 // impl ops::Div for Vec3D {
 //     type Output = Self;
 // 
@@ -218,7 +214,7 @@ impl_op_ex!(/ |u: Vec3D, v: Vec3D| -> Vec3D { Vec3D(u.0 / v.0, u.1 / v.1, u.2 / 
 //     }
 // }
 // 
-impl_op_ex_commutative!(/ |u: Vec3D, t: f32| -> Vec3D { Vec3D(u.0 / t, u.1 / t, u.2 / t) });
+impl_op_ex_commutative!(/ |u: &Vec3D, t: f32| -> Vec3D { Vec3D(u.0 / t, u.1 / t, u.2 / t) });
 // impl ops::Div<f32> for Vec3D {
 //     type Output = Self;
 // 
