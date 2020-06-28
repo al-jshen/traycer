@@ -10,7 +10,7 @@ pub fn get_colour(pixel_colour: Colour, samples_per_pixel: f32) -> String {
 
 fn transform_colour(init_val: f32, samples_per_pixel: f32) -> u16 {
     let mut new_val = init_val / samples_per_pixel;
-    new_val = new_val.sqrt(); // gamma correction
+    new_val = new_val.powf(1./2.2); // gamma correction
     new_val = new_val.clamp(0., 0.999) * 256.;
     new_val as u16
 }
