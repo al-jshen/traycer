@@ -16,7 +16,7 @@ fn ray_colour(r: &Ray, world: &dyn Hittable) -> Colour {
 
     let mut rec = HitRecord::default();
     if world.hit(r, 0., f32::INFINITY, &mut rec) {
-        return Colour::from(0.5 * (rec.normal() + 1.));
+        return Colour::from(0.5 * (rec.normal() + Colour::new(1., 1., 1.)));
     }
     let unit_dir = r.direction().unit_vector();
     let t = 0.5 * (unit_dir.y() + 1.);
@@ -36,8 +36,8 @@ fn main() {
     let cam = Camera::new();
 
     let world = HittableList::new(vec![
-        Arc::new(Sphere::new(Point3D::new(0., -10.5, -1.), -10.)),
         Arc::new(Sphere::new(Point3D::new(0., 0., -1.), 0.5)),
+        Arc::new(Sphere::new(Point3D::new(0., -100.5, -1.), 100.)),
     ]);
 
     let pixels = (0..image_height).into_par_iter()

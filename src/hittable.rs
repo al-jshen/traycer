@@ -101,7 +101,7 @@ impl Hittable for HittableList {
         let mut closest_so_far = t_max;
 
         for obj in self.objects.iter() {
-            if (*obj).hit(r, t_min, closest_so_far, &mut temp_rec) {
+            if obj.hit(r, t_min, closest_so_far, &mut temp_rec) {
                 hit_anything = true;
                 closest_so_far = temp_rec.t;
                 *rec = temp_rec;
