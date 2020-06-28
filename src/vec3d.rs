@@ -13,10 +13,10 @@ impl Vec3D {
     pub fn y(&self) -> f32 { self.1 }
     pub fn z(&self) -> f32 { self.2 }
     pub fn length(&self) -> f32 {
-        self.0 * self.0 + self.1 * self.1 + self.2 * self.2
+        self.length_squared().sqrt()
     }
     pub fn length_squared(&self) -> f32 {
-        self.length() * self.length()
+        self.0 * self.0 + self.1 * self.1 + self.2 * self.2
     }
     pub fn dot(&self, other: &Vec3D) -> f32 {
         (self.0 * other.0) + (self.1 * other.1) + (self.2 * other.2)
