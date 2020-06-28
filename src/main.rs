@@ -28,15 +28,14 @@ fn hit_sphere(center: &Point3D, radius: f32, r: &Ray) -> f32 {
     if discriminant < 0. {
         -1.
     } else {
-        -b - discriminant.sqrt() / (2. * a)
+        (-b - discriminant.sqrt()) / (2. * a)
     }
 }
 
 fn ray_colour(r: &Ray) -> Colour {
-    let sphere_origin = Point3D::new(0., 0., -1.);
-    let t: f32 = hit_sphere(&sphere_origin, 0.5, r);
+    let t: f32 = hit_sphere(&Point3D::new(0., -10.5, -1.), 10.0, r);
     if t > 0. {
-        let normal: Vec3D = (r.at(t) - sphere_origin).unit_vector();
+        let normal: Vec3D = (r.at(t) - Vec3D::new(0., 0., -1.)).unit_vector();
         return 0.5 * Colour::from(normal + 1.);
     }
     let unit_dir = r.direction().unit_vector();
