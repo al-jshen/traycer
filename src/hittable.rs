@@ -57,16 +57,22 @@ impl Hittable for Sphere {
         
         if discriminant > 0. {
             let root: f32 = discriminant.sqrt();
-            let temp = if (t_min..t_max).contains(&((-half_b - root) / a)) {
-                (-half_b - root) / a
-            } else {
-                (-half_b + root) / a
-            };
-            rec.t = temp;
-            rec.p = r.at(rec.t);
-            let outward_normal: Vec3D = (rec.p - self.center) / self.radius;
-            rec.set_normal_face(r, &outward_normal);
-            return true;
+            let temp = (-half_b - root) / a;
+            if temp < t_max && temp > t_min {
+                rec.t = temp;
+                rec.p = r.at(rec.t);
+                let outward_normal: Vec3D = (rec.p - self.center) / self.radius;
+                rec.set_normal_face(r, &outward_normal);
+                return true;
+            }
+            let temp = (-half_b + root) / a;
+            if temp < t_max && temp > t_min {
+                rec.t = temp;
+                rec.p = r.at(rec.t);
+                let outward_normal: Vec3D = (rec.p - self.center) / self.radius;
+                rec.set_normal_face(r, &outward_normal);
+                return true;
+            }
         }
         false
     }
@@ -95,7 +101,7 @@ impl Hittable for HittableList {
         let mut closest_so_far = t_max;
 
         for obj in self.objects.iter() {
-            if obj.hit(r, t_min, closest_so_far, &mut temp_rec) {
+            if (*obj).hit(r, t_min, closest_so_far, &mut temp_rec) {
                 hit_anything = true;
                 closest_so_far = temp_rec.t;
                 *rec = temp_rec;

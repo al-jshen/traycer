@@ -29,14 +29,14 @@ fn main() {
     let aspect_ratio: f32 = 16. / 9.;
     let image_width: usize = 1920;
     let image_height: usize = (image_width as f32 / aspect_ratio) as usize;
-    let samples_per_pixel: u16 = 5;
+    let samples_per_pixel: u16 = 25;
 
     print!("P3\n{} {}\n255\n", image_width, image_height);
 
     let cam = Camera::new();
 
     let world = HittableList::new(vec![
-        Arc::new(Sphere::new(Point3D::new(0., -2.5, -1.), -2.)),
+        Arc::new(Sphere::new(Point3D::new(0., -10.5, -1.), -10.)),
         Arc::new(Sphere::new(Point3D::new(0., 0., -1.), 0.5)),
     ]);
 
@@ -45,7 +45,6 @@ fn main() {
         .map(|h| {
             (0..image_width).into_par_iter()
                 .map(|w| {
-                    // let mut pixel_colour = Colour::new(0., 0., 0.);
                     let pixel_colour = (0..samples_per_pixel).into_par_iter()
                         .map(|_| {
                             let u = (w as f32 + fastrand::f32()) / (image_width - 1) as f32;
