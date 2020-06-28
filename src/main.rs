@@ -1,10 +1,12 @@
 mod vec3d;
 mod colour;
 mod ray;
+mod hittable;
 use crate::vec3d::{Vec3D, Colour, Point3D};
 use crate::colour::get_colour;
 use crate::ray::Ray;
 use rayon::prelude::*;
+use hittable::*;
 
 fn hit_sphere(center: &Point3D, radius: f32, r: &Ray) -> f32 {
     // t: ray scalar. want to solve for this.
