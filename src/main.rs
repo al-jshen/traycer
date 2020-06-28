@@ -1,10 +1,13 @@
 mod vec3d;
 mod colour;
 mod ray;
+mod hittable;
 use crate::vec3d::{Vec3D, Colour, Point3D};
 use crate::colour::get_colour;
 use crate::ray::Ray;
 use rayon::prelude::*;
+use crate::hittable::*;
+use std::sync::Arc;
 
 fn hit_sphere(center: &Point3D, radius: f32, r: &Ray) -> f32 {
     // t: ray scalar. want to solve for this.
@@ -32,12 +35,17 @@ fn hit_sphere(center: &Point3D, radius: f32, r: &Ray) -> f32 {
     }
 }
 
-fn ray_colour(r: &Ray) -> Colour {
-    let t: f32 = hit_sphere(&Point3D::new(0., -10.5, -1.), 10.0, r);
-    if t > 0. {
-        let normal: Vec3D = (r.at(t) - Vec3D::new(0., 0., -1.)).unit_vector();
-        return 0.5 * Colour::from(normal + 1.);
+fn ray_colour(r: &Ray, world: &dyn Hittable) -> Colour {
+    // let t: f32 = hit_sphere(&Point3D::new(0., -10.5, -1.), 10.0, r);
+    // if t > 0. {
+    //     let normal: Vec3D = (r.at(t) - Vec3D::new(0., -10.5, -1.)).unit_vector();
+    //     return 0.5 * Colour::from(normal + 1.);
+    // }
+    let mut rec = HitRecord::default();
+    if world.hit(r, 0., f32::INFINITY, &mut rec) {
+        return 0.5 * (rec.normal() + 1.);
     }
+
     let unit_dir = r.direction().unit_vector();
     let t = 0.5 * (unit_dir.y() + 1.);
     let white = Colour::new(1., 1., 1.);
@@ -62,6 +70,11 @@ fn main() {
     let separation = Vec3D::new(0., 0., focal_length);
     let lower_left_corner: Point3D = origin - horizontal / 2. - vertical / 2. - separation;
 
+    let world = HittableList::new(vec![
+        Arc::new(Sphere::new(Point3D::new(0., 0., -1.), 0.5)),
+        Arc::new(Sphere::new(Point3D::new(0., -10.5, -1.), 10.)),
+    ]);
+
     let pixels = (0..image_height).into_par_iter()
         .rev()
         .map(|h| {
@@ -70,7 +83,7 @@ fn main() {
                     let u = (w as f32) / (image_width - 1) as f32;
                     let v = (h as f32) / (image_height - 1) as f32;
                     let r = Ray::new(origin, lower_left_corner + u * horizontal + v * vertical - origin);
-                    let pixel_colour: Colour = ray_colour(&r);
+                    let pixel_colour: Colour = ray_colour(&r, &world);
                     get_colour(pixel_colour)
                 })
                 .collect::<Vec<_>>()

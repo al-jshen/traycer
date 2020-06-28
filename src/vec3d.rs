@@ -2,7 +2,7 @@
 use std::ops;
 use impl_ops::*;
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct Vec3D(f32, f32, f32);
 
 impl Vec3D {
