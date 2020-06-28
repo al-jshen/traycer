@@ -1,14 +1,16 @@
+#![feature(clamp)]
 mod vec3d;
 mod colour;
 mod ray;
 mod hittable;
-use crate::vec3d::{Vec3D, Colour, Point3D};
+mod camera;
+use crate::vec3d::{Colour, Point3D};
 use crate::colour::get_colour;
 use crate::ray::Ray;
 use rayon::prelude::*;
-use hittable::{HitRecord, Hittable, HittableList, Sphere};
+use crate::hittable::{HitRecord, Hittable, HittableList, Sphere};
 use std::sync::Arc;
-
+use crate::camera::Camera;
 
 fn ray_colour(r: &Ray, world: &dyn Hittable) -> Colour {
 
@@ -25,23 +27,16 @@ fn ray_colour(r: &Ray, world: &dyn Hittable) -> Colour {
 
 fn main() {
     let aspect_ratio: f32 = 16. / 9.;
-    let image_width: usize = 1600;
+    let image_width: usize = 1920;
     let image_height: usize = (image_width as f32 / aspect_ratio) as usize;
+    let samples_per_pixel: u16 = 5;
 
     print!("P3\n{} {}\n255\n", image_width, image_height);
 
-    let viewport_height: f32 = 2.;
-    let viewport_width: f32 = aspect_ratio * viewport_height;
-    let focal_length: f32 = 1.;
-
-    let origin = Point3D::new(0., 0., 0.);
-    let horizontal = Vec3D::new(viewport_width, 0., 0.);
-    let vertical = Vec3D::new(0., viewport_height, 0.);
-    let separation = Vec3D::new(0., 0., focal_length);
-    let lower_left_corner: Point3D = origin - horizontal / 2. - vertical / 2. - separation;
+    let cam = Camera::new();
 
     let world = HittableList::new(vec![
-        Arc::new(Sphere::new(Point3D::new(0., -2.5, -1.), 2.)),
+        Arc::new(Sphere::new(Point3D::new(0., -2.5, -1.), -2.)),
         Arc::new(Sphere::new(Point3D::new(0., 0., -1.), 0.5)),
     ]);
 
@@ -50,11 +45,18 @@ fn main() {
         .map(|h| {
             (0..image_width).into_par_iter()
                 .map(|w| {
-                    let u = (w as f32) / (image_width - 1) as f32;
-                    let v = (h as f32) / (image_height - 1) as f32;
-                    let r = Ray::new(origin, lower_left_corner + u * horizontal + v * vertical - origin);
-                    let pixel_colour: Colour = ray_colour(&r, &world);
-                    get_colour(pixel_colour)
+                    // let mut pixel_colour = Colour::new(0., 0., 0.);
+                    let pixel_colour = (0..samples_per_pixel).into_par_iter()
+                        .map(|_| {
+                            let u = (w as f32 + fastrand::f32()) / (image_width - 1) as f32;
+                            let v = (h as f32 + fastrand::f32()) / (image_height - 1) as f32;
+                            let r: Ray = cam.get_ray(u, v);
+                            ray_colour(&r, &world)
+                        })
+                        .collect::<Vec<_>>()
+                        .iter()
+                        .fold(Colour::new(0., 0., 0.), |acc, x| acc + x);
+                    get_colour(pixel_colour, samples_per_pixel as f32)
                 })
                 .collect::<Vec<_>>()
                 .join("")
