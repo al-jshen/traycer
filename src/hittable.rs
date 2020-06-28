@@ -2,9 +2,17 @@ use crate::vec3d::*;
 use crate::ray::Ray;
 
 pub struct HitRecord {
-    pub p: Point3D,
-    pub normal: Vec3D,
-    pub t: f32,
+    p: Point3D,
+    t: f32,
+    normal: Vec3D,
+    front_face: bool,
+}
+
+impl HitRecord {
+    pub fn set_normal_face(&mut self, r: &Ray, outward_normal: &Vec3D) {
+        self.front_face = r.direction().dot(outward_normal) < 0.;
+        self.normal = if self.front_face { *outward_normal } else { -*outward_normal };
+    }
 }
 
 pub trait Hittable {
@@ -12,8 +20,8 @@ pub trait Hittable {
 }
 
 pub struct Sphere {
-    pub center: Point3D,
-    pub radius: f32,
+    center: Point3D,
+    radius: f32,
 }
 
 impl Sphere {
@@ -42,7 +50,8 @@ impl Hittable for Sphere {
             };
             rec.t = temp;
             rec.p = r.at(rec.t);
-            rec.normal = (rec.p - self.center) / self.radius;
+            let normal = (rec.p - self.center) / self.radius;
+            rec.set_normal_face(r, &normal);
             return true;
         }
         false
