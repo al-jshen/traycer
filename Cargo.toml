@@ -8,4 +8,5 @@ edition = "2018"
 
 [dependencies]
 impl_ops = "0.1"
-rayon = "*"
+rayon = "1"
+fastrand = "1"
