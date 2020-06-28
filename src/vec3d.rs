@@ -1,6 +1,7 @@
 //use std::ops::{Neg, Index, Add, AddAssign, Sub, SubAssign, Mul, MulAssign, Div, DivAssign};
 use std::ops;
 use impl_ops::*;
+use std::f32::consts;
 
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Vec3D(f32, f32, f32);
@@ -45,6 +46,12 @@ impl Vec3D {
                 return temp;
             }
         }
+    }
+    pub fn random_unit_vector() -> Vec3D {
+        let theta = fastrand::f32() * consts::PI;
+        let z = (1. - -1.) * fastrand::f32() + -1.;
+        let r = (1. - z * z).sqrt();
+        Vec3D (r * theta.cos(), r * theta.sin(), z)
     }
 }
 

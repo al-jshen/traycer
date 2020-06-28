@@ -20,7 +20,7 @@ fn ray_colour(r: &Ray, world: &dyn Hittable, depth: u16) -> Colour {
 
     let mut rec = HitRecord::default();
     if world.hit(r, f32::EPSILON, f32::INFINITY, &mut rec) {
-        let target: Point3D = rec.p() + rec.normal() + Vec3D::random_in_unit_sphere();
+        let target: Point3D = rec.p() + rec.normal() + Vec3D::random_unit_vector();
         return 0.5 * ray_colour(&Ray::new(rec.p(), target - rec.p()), world, depth - 1);
     }
     let unit_dir = r.direction().unit_vector();
