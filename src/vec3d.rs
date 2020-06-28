@@ -31,6 +31,21 @@ impl Vec3D {
     pub fn unit_vector(&self) -> Vec3D {
         *self / self.length()
     }
+    pub fn random(min: f32, max: f32) -> Vec3D {
+        Vec3D (
+            (max - min) * fastrand::f32() + min,
+            (max - min) * fastrand::f32() + min,
+            (max - min) * fastrand::f32() + min,
+        )
+    }
+    pub fn random_in_unit_sphere() -> Vec3D {
+        loop {
+            let temp = Vec3D::random(-1., 1.);
+            if temp.length_squared() < 1. {
+                return temp;
+            }
+        }
+    }
 }
 
 // - operator
