@@ -61,11 +61,24 @@ impl Vec3D {
     pub fn reflect(&self, normal: &Vec3D) -> Vec3D {
         self - 2. * self.dot(normal) * normal
     }
+    pub fn refract(&self, normal: &Vec3D, refr_index_ratio: f32) -> Vec3D {
+        let cos_theta: f32 = (-self).dot(normal);
+        let r_out_parallel: Vec3D = refr_index_ratio * (self + cos_theta * normal);
+        let r_out_perp: Vec3D = - (1. - r_out_parallel.length_squared()).sqrt() * normal;
+        r_out_parallel + r_out_perp
+    }
 }
 
 // - operator
-
 impl ops::Neg for Vec3D {
+    type Output = Vec3D;
+
+    fn neg(self) -> Self::Output {
+        Vec3D ( self.0, self.1, self.2 )
+    }
+}
+
+impl ops::Neg for &Vec3D {
     type Output = Vec3D;
 
     fn neg(self) -> Self::Output {

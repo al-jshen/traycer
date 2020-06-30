@@ -5,7 +5,8 @@ use crate::vec3d::{Colour, Vec3D};
 #[derive(Debug, Clone, Copy)]
 pub enum Material {
     Lambertian { albedo: Colour },
-    Metal { albedo: Colour, fuzziness: f32 }
+    Metal { albedo: Colour, fuzziness: f32 },
+    Dielectric { refr_index: f32 },
 }
 
 impl Material {
@@ -24,7 +25,17 @@ impl Material {
                 } else {
                     None
                 }
-
+            }
+            Material::Dielectric {refr_index} => {
+                let attenuation = Colour::new(1., 1., 1.);
+                let refr_index_ratio = if rec.front_face() {
+                    1. / refr_index
+                } else {
+                    *refr_index
+                };
+                let unit_dir = r_in.direction().unit_vector();
+                let refracted = unit_dir.refract(&rec.normal(), refr_index_ratio);
+                Some((Ray::new(rec.p(), refracted), attenuation))
             }
         }
     }
