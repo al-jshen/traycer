@@ -1,6 +1,7 @@
 use crate::vec3d::*;
 use crate::ray::Ray;
 use std::sync::Arc;
+use crate::material::Material;
 
 #[derive(Debug, Default, Clone, Copy)]
 pub struct HitRecord {
@@ -30,25 +31,27 @@ impl HitRecord {
 }
 
 pub trait Hittable: Send + Sync {
-    fn hit(&self, r: &Ray, t_min: f32, t_max: f32, rec: &mut HitRecord) -> bool;
+    fn hit(&self, r: &Ray, t_min: f32, t_max: f32, rec: &mut HitRecord) -> Option<Material>;
 }
 
 pub struct Sphere {
     center: Point3D,
     radius: f32,
+    material: Material,
 }
 
 impl Sphere {
-    pub fn new(center: Point3D, radius: f32) -> Sphere {
+    pub fn new(center: Point3D, radius: f32, material: Material) -> Sphere {
         Sphere {
             center, 
             radius, 
+            material,
         }
     }
 }
 
 impl Hittable for Sphere {
-   fn hit(&self, r: &Ray, t_min: f32, t_max: f32, rec: &mut HitRecord) -> bool {
+   fn hit(&self, r: &Ray, t_min: f32, t_max: f32, rec: &mut HitRecord) -> Option<Material> {
         let sep: Vec3D = r.origin() - self.center;
         let a: f32 = r.direction().length_squared();
         let half_b: f32 = r.direction().dot(&sep);
@@ -63,7 +66,7 @@ impl Hittable for Sphere {
                 rec.p = r.at(rec.t);
                 let outward_normal: Vec3D = (rec.p - self.center) / self.radius;
                 rec.set_normal_face(r, &outward_normal);
-                return true;
+                return Some(self.material);
             }
             let temp = (-half_b + root) / a;
             if temp < t_max && temp > t_min {
@@ -71,10 +74,10 @@ impl Hittable for Sphere {
                 rec.p = r.at(rec.t);
                 let outward_normal: Vec3D = (rec.p - self.center) / self.radius;
                 rec.set_normal_face(r, &outward_normal);
-                return true;
+                return Some(self.material);
             }
         }
-        false
+        None
     }
 }
 
@@ -95,14 +98,14 @@ impl HittableList {
 }
 
 impl Hittable for HittableList {
-    fn hit(&self, r: &Ray, t_min: f32, t_max: f32, rec: &mut HitRecord) -> bool {
+    fn hit(&self, r: &Ray, t_min: f32, t_max: f32, rec: &mut HitRecord) -> Option<Material> {
         let mut temp_rec = HitRecord::default();
-        let mut hit_anything = false;
+        let mut hit_anything = None;
         let mut closest_so_far = t_max;
 
         for obj in self.objects.iter() {
-            if obj.hit(r, t_min, closest_so_far, &mut temp_rec) {
-                hit_anything = true;
+            if let Some(material) = obj.hit(r, t_min, closest_so_far, &mut temp_rec) {
+                hit_anything = Some(material);
                 closest_so_far = temp_rec.t;
                 *rec = temp_rec;
             }

@@ -53,6 +53,14 @@ impl Vec3D {
         let r = (1. - z * z).sqrt();
         Vec3D (r * theta.cos(), r * theta.sin(), z)
     }
+    pub fn random_in_hemisphere(normal: &Vec3D) -> Vec3D {
+        let in_unit_sphere = Vec3D::random_in_unit_sphere();
+        // positive dot product = same hemisphere/direction as normal
+        in_unit_sphere.dot(normal).signum() * in_unit_sphere
+    }
+    pub fn reflect(&self, normal: &Vec3D) -> Vec3D {
+        self - 2. * self.dot(normal) * normal
+    }
 }
 
 // - operator
