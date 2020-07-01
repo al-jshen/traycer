@@ -40,25 +40,21 @@ fn main() {
     let aspect_ratio: f32 = 16. / 9.;
     let image_width: usize = 1920;
     let image_height: usize = (image_width as f32 / aspect_ratio) as usize;
-    let samples_per_pixel: u16 = 48;
-    let max_depth: u16 = 40;
+    let samples_per_pixel: u16 = 240;
+    let max_depth: u16 = 36;
 
     print!("P3\n{} {}\n255\n", image_width, image_height);
 
-    let origin = Point3D::new(-2., 2., 1.);
-    let lookat = Point3D::new(0., 0., -1.);
+    let origin = Point3D::new(13., 2., 3.);
+    let lookat = Point3D::new(0., 0., 0.);
     let v_up = Vec3D::new(0., 1., 0.);
-    let vert_fov = 30.;
-    let aperture = 0.7;
-    let cam = Camera::new(origin, lookat, v_up, vert_fov, aspect_ratio, aperture);
+    let vert_fov = 20.;
+    let aperture = 0.1;
+    let focus_dist = 10.;
+    let cam = Camera::new(origin, lookat, v_up, vert_fov, aspect_ratio, aperture, focus_dist);
 
-    let world = HittableList::new(vec![
-        Arc::new(Sphere::new(Point3D::new(1., 0., -1.), 0.5, Material::Metal {albedo: Colour::new(0.8, 0.8, 0.8), fuzziness: 0.1} )),
-        Arc::new(Sphere::new(Point3D::new(0., 0., -1.), 0.5, Material::Lambertian {albedo: Colour::new(0.8, 0.2, 0.2)} )),
-        Arc::new(Sphere::new(Point3D::new(-1., 0., -1.), 0.5, Material::Dielectric {refr_index: 1.5})),
-        Arc::new(Sphere::new(Point3D::new(0., -100.5, -1.), 100., Material::Lambertian {albedo: Colour::new(0.2, 0.6, 0.8)} )),
-    ]);
-
+    let world = HittableList::random_scene();
+    
     let pixels = (0..image_height).into_par_iter()
         .rev()
         .map(|h| {

@@ -1,6 +1,6 @@
 use crate::vec3d::*;
 use crate::ray::Ray;
-use std::sync::Arc;
+//use std::sync::Arc;
 use crate::material::Material;
 
 #[derive(Debug, Default, Clone, Copy)]
@@ -83,18 +83,55 @@ impl Hittable for Sphere {
 }
 
 pub struct HittableList {
-    objects: Vec<Arc<dyn Hittable>>
+    objects: Vec<Box<dyn Hittable>>
 }
 
 impl HittableList {
-    pub fn new(objects: Vec<Arc<dyn Hittable>>) -> HittableList {
+    pub fn new(objects: Vec<Box<dyn Hittable>>) -> HittableList {
         HittableList { objects }
     }
-    pub fn add(&mut self, object: Arc<dyn Hittable>) {
+    pub fn add(&mut self, object: Box<dyn Hittable>) {
         self.objects.push(object)
     }
     pub fn clear(&mut self) {
         self.objects.clear()
+    }
+    pub fn random_scene() -> HittableList {
+        let ground_radius = 300.;
+        let mut objects: Vec<Box<dyn Hittable>> = vec![];
+        let ground = Box::new(Sphere::new(Point3D::new(0., -ground_radius, 0.), ground_radius, Material::Lambertian { albedo: Colour::new(0.5, 0.5, 0.5)}));
+        objects.push(ground);
+        (-11..11).into_iter()
+            .for_each(|a| {
+                (-11..11).into_iter()
+                    .for_each(|b| {
+                        let choose_mat = fastrand::f32();
+                        let radius = 0.15 + 0.1 * fastrand::f32();
+                        let x = a as f32 + 0.9 * fastrand::f32();
+                        let y = b as f32 + 0.9 * fastrand::f32();
+                        // offset so that the spheres stick to the ground
+                        let offset = (ground_radius.powi(2) - x.powi(2) - y.powi(2)).sqrt();
+                        let z = -ground_radius + offset + radius;
+                        let center = Point3D::new(x, z, y);
+                        if (center - Point3D::new(4., 0.2, 0.)).length() > 0.9 {
+                            if choose_mat < 0.5 {
+                                // lambertian 
+                                objects.push(Box::new(Sphere::new(center, radius, Material::Lambertian { albedo: Colour::random(0., 1.) } )));
+                            } else if choose_mat < 0.85 {
+                                // metal
+                                objects.push(Box::new(Sphere::new(center, radius, Material::Metal { albedo: Colour::random(0., 1.), fuzziness: 0.5 * fastrand::f32() })));
+                            } else {
+                                // dielectric
+                                objects.push(Box::new(Sphere::new(center, radius, Material::Dielectric { refr_index: 1.5 })));
+                            }
+                        } 
+                    })
+            });
+        objects.push(Box::new(Sphere::new(Point3D::new(-4., 1., 0.), 1., Material::Lambertian { albedo: Colour::new(0.4, 0.2, 0.1) })));
+        objects.push(Box::new(Sphere::new(Point3D::new(4., 1., 0.), 1., Material::Metal { albedo: Colour::new(0.7, 0.6, 0.5), fuzziness: 0. })));
+        objects.push(Box::new(Sphere::new(Point3D::new(0., 1., 0.), 1., Material::Dielectric { refr_index: 1.5 })));
+
+        HittableList { objects }
     }
 }
 

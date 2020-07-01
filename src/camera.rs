@@ -12,7 +12,7 @@ pub struct Camera {
 }
 
 impl Camera {
-    pub fn new(origin: Point3D, lookat: Point3D, v_up: Vec3D, vert_fov: f32, aspect_ratio: f32, aperture: f32) -> Camera {
+    pub fn new(origin: Point3D, lookat: Point3D, v_up: Vec3D, vert_fov: f32, aspect_ratio: f32, aperture: f32, focus_dist: f32) -> Camera {
         let theta = vert_fov * consts::PI / 180.;
         let h = (theta / 2.).tan();
         let viewport_height = 2. * h;
@@ -23,7 +23,6 @@ impl Camera {
         let v = w.cross(&u);
         let axes = [u, v, w];
         
-        let focus_dist = (origin - lookat).length();
         let horizontal = viewport_width * u * focus_dist;
         let vertical = viewport_height * v * focus_dist;
         let lower_left_corner = origin - horizontal/2. - vertical/2. - w * focus_dist;
