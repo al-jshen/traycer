@@ -13,6 +13,7 @@ use crate::hittable::{HitRecord, Hittable, HittableList, Sphere};
 use std::sync::Arc;
 use crate::camera::Camera;
 use crate::material::Material;
+use std::f32::consts;
 
 fn ray_colour(r: &Ray, world: &dyn Hittable, depth: u16) -> Colour {
 
@@ -44,14 +45,12 @@ fn main() {
 
     print!("P3\n{} {}\n255\n", image_width, image_height);
 
-    let cam = Camera::new();
+    let cam = Camera::new(90., image_width as f32 / image_height as f32);
+    let R = (consts::PI / 4.).cos();
 
     let world = HittableList::new(vec![
-        Arc::new(Sphere::new(Point3D::new(0., 0., -1.), 0.5, Material::Lambertian { albedo: Colour::new(0.1, 0.2, 0.5) })),
-        Arc::new(Sphere::new(Point3D::new(0., -100.5, -1.), 100., Material::Lambertian { albedo: Colour::new(0.8, 0.8, 0.) })),
-        Arc::new(Sphere::new(Point3D::new(1., 0., -1.), 0.5, Material::Metal { albedo: Colour::new(0.8, 0.6, 0.2), fuzziness: 0.3 })),
-        Arc::new(Sphere::new(Point3D::new(-1., 0., -1.), 0.5, Material::Dielectric { refr_index: 1.5 })),
-        Arc::new(Sphere::new(Point3D::new(-1., 0., -1.), -0.45, Material::Dielectric { refr_index: 1.5 })),
+        Arc::new(Sphere::new(Point3D::new(-R, 0., -1.), R, Material::Lambertian {albedo: Colour::new(0., 0., 1.)} )),
+        Arc::new(Sphere::new(Point3D::new(R, 0., -1.), R, Material::Lambertian {albedo: Colour::new(1., 0., 0.)} )),
     ]);
 
     let pixels = (0..image_height).into_par_iter()

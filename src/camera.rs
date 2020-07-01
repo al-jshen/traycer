@@ -1,5 +1,6 @@
 use crate::vec3d::{Vec3D, Point3D};
 use crate::ray::Ray;
+use std::f32::consts;
 
 pub struct Camera {
     origin: Point3D,
@@ -9,8 +10,9 @@ pub struct Camera {
 }
 
 impl Camera {
-    pub fn new() -> Camera {
-        let aspect_ratio = 16. / 9.;
+    pub fn new(vert_fov: f32, aspect_ratio: f32) -> Camera {
+        let theta = vert_fov * consts::PI / 180.;
+        let h = (theta / 2.).tan();
         let viewport_height = 2.;
         let viewport_width = aspect_ratio * viewport_height;
         let focal_length = 1.;
