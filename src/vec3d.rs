@@ -63,11 +63,16 @@ impl Vec3D {
     }
     pub fn refract(&self, normal: &Vec3D, refr_index_ratio: f32) -> Vec3D {
         assert!(self.dot(normal) < 0.);
-        assert!(-self.dot(normal) > 0.);
-        let cos_theta: f32 = (-self).dot(normal);
-        let r_out_parallel: Vec3D = refr_index_ratio * (self + cos_theta * normal);
-        let r_out_perp: Vec3D =  -(1. - r_out_parallel.length_squared()).sqrt() * normal;
-        r_out_parallel + r_out_perp
+        //let cos_theta: f32 = (-self).dot(normal);
+        //let r_out_parallel: Vec3D = refr_index_ratio * (self + cos_theta * normal);
+        //let r_out_perp: Vec3D =  -(1. - r_out_parallel.length_squared()).sqrt() * normal;
+        //let calc1 = r_out_parallel + r_out_perp;
+        let c = -(normal.dot(&self));
+        let calc2 = refr_index_ratio * self + (refr_index_ratio * c - (1. - refr_index_ratio.powi(2) * (1. - c.powi(2))).sqrt()) * normal;
+        // if calc1 != calc2 {
+        //     eprintln!("{:?} {:?}", calc1, calc2);
+        // }
+        calc2
     }
 }
 
@@ -100,6 +105,15 @@ impl ops::Index<usize> for Vec3D {
             2 => &self.2,
             _ => panic!("Index not found in Vec3D.")
         }
+    }
+}
+
+// == 
+impl PartialEq for Vec3D {
+    fn eq(&self, other: &Self) -> bool {
+        (self.0 - other.0).abs() < f32::EPSILON &&
+        (self.1 - other.1).abs() < f32::EPSILON &&
+        (self.2 - other.2).abs() < f32::EPSILON
     }
 }
 

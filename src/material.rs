@@ -29,13 +29,11 @@ impl Material {
             Material::Dielectric {refr_index} => {
                 let attenuation = Colour::new(1., 1., 1.);
                 let refr_index_ratio = if rec.front_face() {
-                    assert!(r_in.direction().dot(&rec.normal()) < 0.);
                     1. / refr_index
                 } else {
                     *refr_index
                 };
                 let unit_dir = r_in.direction().unit_vector();
-                assert!(unit_dir.dot(&r_in.direction()) > 0.);
                 assert!(unit_dir.dot(&rec.normal()) < 0.);
                 let refracted = unit_dir.refract(&rec.normal(), refr_index_ratio);
                 Some((Ray::new(rec.p(), refracted), attenuation))
