@@ -35,8 +35,16 @@ impl Material {
                 };
                 let unit_dir = r_in.direction().unit_vector();
                 assert!(unit_dir.dot(&rec.normal()) < 0.);
-                let refracted = unit_dir.refract(&rec.normal(), refr_index_ratio);
-                Some((Ray::new(rec.p(), refracted), attenuation))
+
+                let cos_theta = -unit_dir.dot(&rec.normal());
+                let sin_theta = (1. - cos_theta * cos_theta).sqrt();
+                if refr_index_ratio * sin_theta > 1. { 
+                    let reflected = unit_dir.reflect(&rec.normal());
+                    Some((Ray::new(rec.p(), reflected), attenuation))
+                } else {
+                    let refracted = unit_dir.refract(&rec.normal(), refr_index_ratio);
+                    Some((Ray::new(rec.p(), refracted), attenuation))
+                }
             }
         }
     }
