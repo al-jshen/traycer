@@ -40,7 +40,7 @@ fn main() {
     let image_width: usize = 1920;
     let image_height: usize = (image_width as f32 / aspect_ratio) as usize;
     let samples_per_pixel: u16 = 25;
-    let max_depth: u16 = 100;
+    let max_depth: u16 = 20;
 
     print!("P3\n{} {}\n255\n", image_width, image_height);
 

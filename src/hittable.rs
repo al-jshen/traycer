@@ -14,7 +14,18 @@ pub struct HitRecord {
 impl HitRecord {
     pub fn set_normal_face(&mut self, r: &Ray, outward_normal: &Vec3D) {
         self.front_face = r.direction().dot(outward_normal) < 0.;
-        self.normal = if self.front_face { *outward_normal } else { -*outward_normal };
+        //eprintln!("{:?} {:?} {}", r.direction(), outward_normal, r.direction().dot(outward_normal));
+        if self.front_face() {
+            assert!(outward_normal.dot(&r.direction()) < 0.);
+            self.normal = *outward_normal;
+            //eprintln!("{:?}", self.normal);
+        } else {
+            assert!(-outward_normal.dot(&r.direction()) < 0.);
+            self.normal = -*outward_normal;
+            //eprintln!("{:?}", self.normal);
+        }
+        //self.normal = if self.front_face { *outward_normal } else { -*outward_normal };
+        assert!(self.normal().dot(&r.direction()) <= 0.);
     }
     pub fn p(&self) -> Point3D {
         self.p
