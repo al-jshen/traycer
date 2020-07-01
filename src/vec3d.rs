@@ -47,6 +47,18 @@ impl Vec3D {
             }
         }
     }
+    pub fn random_in_unit_disk() -> Vec3D {
+        loop {
+            let temp = Vec3D::new(
+                (1. - -1.) * fastrand::f32() + -1.,
+                (1. - -1.) * fastrand::f32() + -1.,
+                0.
+            );
+            if temp.length_squared() < 1. {
+                return temp;
+            }
+        }
+    }
     pub fn random_unit_vector() -> Vec3D {
         let theta = fastrand::f32() * consts::PI;
         let z = (1. - -1.) * fastrand::f32() + -1.;

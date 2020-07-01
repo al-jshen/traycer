@@ -45,7 +45,12 @@ fn main() {
 
     print!("P3\n{} {}\n255\n", image_width, image_height);
 
-    let cam = Camera::new(Point3D::new(-2., 2., 1.), Point3D::new(0., 0., -1.), Vec3D::new(0., 1., 0.), 30., aspect_ratio);
+    let origin = Point3D::new(-2., 2., 1.);
+    let lookat = Point3D::new(0., 0., -1.);
+    let v_up = Vec3D::new(0., 1., 0.);
+    let vert_fov = 30.;
+    let aperture = 0.7;
+    let cam = Camera::new(origin, lookat, v_up, vert_fov, aspect_ratio, aperture);
 
     let world = HittableList::new(vec![
         Arc::new(Sphere::new(Point3D::new(1., 0., -1.), 0.5, Material::Metal {albedo: Colour::new(0.8, 0.8, 0.8), fuzziness: 0.1} )),
