@@ -13,7 +13,7 @@ impl Camera {
     pub fn new(origin: Point3D, lookat: Point3D, v_up: Vec3D, vert_fov: f32, aspect_ratio: f32) -> Camera {
         let theta = vert_fov * consts::PI / 180.;
         let h = (theta / 2.).tan();
-        let viewport_height = 2.;
+        let viewport_height = 2. * h;
         let viewport_width = aspect_ratio * viewport_height;
 
         let w = (origin - lookat).unit_vector();

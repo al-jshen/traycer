@@ -41,15 +41,15 @@ fn main() {
     let image_width: usize = 1920;
     let image_height: usize = (image_width as f32 / aspect_ratio) as usize;
     let samples_per_pixel: u16 = 48;
-    let max_depth: u16 = 20;
+    let max_depth: u16 = 40;
 
     print!("P3\n{} {}\n255\n", image_width, image_height);
 
-    let cam = Camera::new(Point3D::new(-2., 2., 1.), Point3D::new(0., 0., -1.), Vec3D::new(0., 1., 0.), 90., aspect_ratio);
+    let cam = Camera::new(Point3D::new(-2., 2., 1.), Point3D::new(0., 0., -1.), Vec3D::new(0., 1., 0.), 30., aspect_ratio);
 
     let world = HittableList::new(vec![
         Arc::new(Sphere::new(Point3D::new(1., 0., -1.), 0.5, Material::Metal {albedo: Colour::new(0.8, 0.8, 0.8), fuzziness: 0.1} )),
-        Arc::new(Sphere::new(Point3D::new(0., 0., -1.), 0.5, Material::Lambertian {albedo: Colour::new(1., 0., 0.)} )),
+        Arc::new(Sphere::new(Point3D::new(0., 0., -1.), 0.5, Material::Lambertian {albedo: Colour::new(0.8, 0.2, 0.2)} )),
         Arc::new(Sphere::new(Point3D::new(-1., 0., -1.), 0.5, Material::Dielectric {refr_index: 1.5})),
         Arc::new(Sphere::new(Point3D::new(0., -100.5, -1.), 100., Material::Lambertian {albedo: Colour::new(0.2, 0.6, 0.8)} )),
     ]);
