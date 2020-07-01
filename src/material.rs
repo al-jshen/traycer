@@ -40,12 +40,21 @@ impl Material {
                 let sin_theta = (1. - cos_theta * cos_theta).sqrt();
                 if refr_index_ratio * sin_theta > 1. { 
                     let reflected = unit_dir.reflect(&rec.normal());
-                    Some((Ray::new(rec.p(), reflected), attenuation))
-                } else {
-                    let refracted = unit_dir.refract(&rec.normal(), refr_index_ratio);
-                    Some((Ray::new(rec.p(), refracted), attenuation))
+                    return Some((Ray::new(rec.p(), reflected), attenuation));
+                } 
+                let reflect_prob = shlick(cos_theta, refr_index_ratio);
+                if fastrand::f32() < reflect_prob {
+                    let reflected = unit_dir.reflect(&rec.normal());
+                    return Some((Ray::new(rec.p(), reflected), attenuation));
                 }
+                let refracted = unit_dir.refract(&rec.normal(), refr_index_ratio);
+                Some((Ray::new(rec.p(), refracted), attenuation))
             }
         }
     }
+}
+
+fn shlick(cosine: f32, refr_index: f32) -> f32 {
+    let r0 = ((1. - refr_index) / (1. + refr_index)).powi(2);
+    r0 + (1. - r0) * (1. - cosine).powi(5)
 }

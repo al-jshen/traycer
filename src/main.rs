@@ -49,8 +49,9 @@ fn main() {
     let world = HittableList::new(vec![
         Arc::new(Sphere::new(Point3D::new(0., 0., -1.), 0.5, Material::Lambertian { albedo: Colour::new(0.1, 0.2, 0.5) })),
         Arc::new(Sphere::new(Point3D::new(0., -100.5, -1.), 100., Material::Lambertian { albedo: Colour::new(0.8, 0.8, 0.) })),
-        Arc::new(Sphere::new(Point3D::new(1., 0., -1.), 0.5, Material::Metal { albedo: Colour::new(0.8, 0.6, 0.2), fuzziness: 0. })),
+        Arc::new(Sphere::new(Point3D::new(1., 0., -1.), 0.5, Material::Metal { albedo: Colour::new(0.8, 0.6, 0.2), fuzziness: 0.3 })),
         Arc::new(Sphere::new(Point3D::new(-1., 0., -1.), 0.5, Material::Dielectric { refr_index: 1.5 })),
+        Arc::new(Sphere::new(Point3D::new(-1., 0., -1.), -0.45, Material::Dielectric { refr_index: 1.5 })),
     ]);
 
     let pixels = (0..image_height).into_par_iter()
