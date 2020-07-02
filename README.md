@@ -2,4 +2,4 @@
 
 Ray tracer written in Rust.
 
-![final render](final.png)
+![final render](final_render.png)
