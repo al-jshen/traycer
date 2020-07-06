@@ -2,6 +2,7 @@
 use std::ops;
 use impl_ops::*;
 use std::f32::consts;
+use crate::utils::rand_in_range;
 
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Vec3D(f32, f32, f32);
@@ -34,9 +35,9 @@ impl Vec3D {
     }
     pub fn random(min: f32, max: f32) -> Vec3D {
         Vec3D (
-            (max - min) * fastrand::f32() + min,
-            (max - min) * fastrand::f32() + min,
-            (max - min) * fastrand::f32() + min,
+            rand_in_range(min, max),
+            rand_in_range(min, max),
+            rand_in_range(min, max),
         )
     }
     pub fn random_in_unit_sphere() -> Vec3D {
@@ -50,8 +51,8 @@ impl Vec3D {
     pub fn random_in_unit_disk() -> Vec3D {
         loop {
             let temp = Vec3D::new(
-                (1. - -1.) * fastrand::f32() + -1.,
-                (1. - -1.) * fastrand::f32() + -1.,
+                rand_in_range(-1., 1.),
+                rand_in_range(-1., 1.),
                 0.
             );
             if temp.length_squared() < 1. {
@@ -61,7 +62,7 @@ impl Vec3D {
     }
     pub fn random_unit_vector() -> Vec3D {
         let theta = fastrand::f32() * consts::PI;
-        let z = (1. - -1.) * fastrand::f32() + -1.;
+        let z = rand_in_range(-1., 1.);
         let r = (1. - z * z).sqrt();
         Vec3D (r * theta.cos(), r * theta.sin(), z)
     }
