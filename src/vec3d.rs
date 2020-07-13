@@ -1,19 +1,25 @@
 //use std::ops::{Neg, Index, Add, AddAssign, Sub, SubAssign, Mul, MulAssign, Div, DivAssign};
-use std::ops;
+use crate::utils::rand_in_range;
 use impl_ops::*;
 use std::f32::consts;
-use crate::utils::rand_in_range;
+use std::ops;
 
 #[derive(Debug, Default, Copy, Clone)]
 pub struct Vec3D(f32, f32, f32);
 
 impl Vec3D {
     pub fn new(x: f32, y: f32, z: f32) -> Vec3D {
-        Vec3D ( x, y, z )
+        Vec3D(x, y, z)
     }
-    pub fn x(&self) -> f32 { self.0 }
-    pub fn y(&self) -> f32 { self.1 }
-    pub fn z(&self) -> f32 { self.2 }
+    pub fn x(&self) -> f32 {
+        self.0
+    }
+    pub fn y(&self) -> f32 {
+        self.1
+    }
+    pub fn z(&self) -> f32 {
+        self.2
+    }
     pub fn length(&self) -> f32 {
         self.length_squared().sqrt()
     }
@@ -24,7 +30,7 @@ impl Vec3D {
         (self.0 * other.0) + (self.1 * other.1) + (self.2 * other.2)
     }
     pub fn cross(&self, other: &Vec3D) -> Vec3D {
-        Vec3D (
+        Vec3D(
             self.1 * other.2 - self.2 * other.1,
             self.2 * other.0 - self.0 * other.2,
             self.0 * other.1 - self.1 * other.0,
@@ -34,7 +40,7 @@ impl Vec3D {
         *self / self.length()
     }
     pub fn random(min: f32, max: f32) -> Vec3D {
-        Vec3D (
+        Vec3D(
             rand_in_range(min, max),
             rand_in_range(min, max),
             rand_in_range(min, max),
@@ -50,11 +56,7 @@ impl Vec3D {
     }
     pub fn random_in_unit_disk() -> Vec3D {
         loop {
-            let temp = Vec3D::new(
-                rand_in_range(-1., 1.),
-                rand_in_range(-1., 1.),
-                0.
-            );
+            let temp = Vec3D::new(rand_in_range(-1., 1.), rand_in_range(-1., 1.), 0.);
             if temp.length_squared() < 1. {
                 return temp;
             }
@@ -64,7 +66,7 @@ impl Vec3D {
         let theta = fastrand::f32() * consts::PI;
         let z = rand_in_range(-1., 1.);
         let r = (1. - z * z).sqrt();
-        Vec3D (r * theta.cos(), r * theta.sin(), z)
+        Vec3D(r * theta.cos(), r * theta.sin(), z)
     }
     pub fn random_in_hemisphere(normal: &Vec3D) -> Vec3D {
         let in_unit_sphere = Vec3D::random_in_unit_sphere();
@@ -81,7 +83,9 @@ impl Vec3D {
         //let r_out_perp: Vec3D =  -(1. - r_out_parallel.length_squared()).sqrt() * normal;
         //let calc1 = r_out_parallel + r_out_perp;
         let c = -(normal.dot(&self));
-        let calc2 = refr_index_ratio * self + (refr_index_ratio * c - (1. - refr_index_ratio.powi(2) * (1. - c.powi(2))).sqrt()) * normal;
+        let calc2 = refr_index_ratio * self
+            + (refr_index_ratio * c - (1. - refr_index_ratio.powi(2) * (1. - c.powi(2))).sqrt())
+                * normal;
         // if calc1 != calc2 {
         //     eprintln!("{:?} {:?}", calc1, calc2);
         // }
@@ -94,7 +98,7 @@ impl ops::Neg for Vec3D {
     type Output = Vec3D;
 
     fn neg(self) -> Self::Output {
-        Vec3D ( -self.0, -self.1, -self.2 )
+        Vec3D(-self.0, -self.1, -self.2)
     }
 }
 
@@ -102,11 +106,11 @@ impl ops::Neg for &Vec3D {
     type Output = Vec3D;
 
     fn neg(self) -> Self::Output {
-        Vec3D ( -self.0, -self.1, -self.2 )
+        Vec3D(-self.0, -self.1, -self.2)
     }
 }
 
-// Vec3D[indexing] 
+// Vec3D[indexing]
 
 impl ops::Index<usize> for Vec3D {
     type Output = f32;
@@ -116,17 +120,17 @@ impl ops::Index<usize> for Vec3D {
             0 => &self.0,
             1 => &self.1,
             2 => &self.2,
-            _ => panic!("Index not found in Vec3D.")
+            _ => panic!("Index not found in Vec3D."),
         }
     }
 }
 
-// == 
+// ==
 impl PartialEq for Vec3D {
     fn eq(&self, other: &Self) -> bool {
-        (self.0 - other.0).abs() < f32::EPSILON &&
-        (self.1 - other.1).abs() < f32::EPSILON &&
-        (self.2 - other.2).abs() < f32::EPSILON
+        (self.0 - other.0).abs() < f32::EPSILON
+            && (self.1 - other.1).abs() < f32::EPSILON
+            && (self.2 - other.2).abs() < f32::EPSILON
     }
 }
 
@@ -135,7 +139,7 @@ impl PartialEq for Vec3D {
 impl_op_ex!(+ |u: &Vec3D, v: &Vec3D| -> Vec3D { Vec3D(u.0 + v.0, u.1 + v.1, u.2 + v.2)});
 // impl Add for Vec3D {
 //     type Output = Self;
-// 
+//
 //     fn add(self, v: Self) -> Self {
 //         Self (
 //             self.0 + v.0,
@@ -148,7 +152,7 @@ impl_op_ex!(+ |u: &Vec3D, v: &Vec3D| -> Vec3D { Vec3D(u.0 + v.0, u.1 + v.1, u.2 
 impl_op_ex_commutative!(+ |u: &Vec3D, t: f32| -> Vec3D { Vec3D(u.0 + t, u.1 + t, u.2 + t) });
 // impl Add<f32> for Vec3D {
 //     type Output = Self;
-// 
+//
 //     fn add(self, scalar: f32) -> Self {
 //         Self (
 //             self.0 * scalar,
@@ -157,7 +161,7 @@ impl_op_ex_commutative!(+ |u: &Vec3D, t: f32| -> Vec3D { Vec3D(u.0 + t, u.1 + t,
 //         )
 //     }
 // }
- 
+
 impl_op_ex!(+= |u: &mut Vec3D, v: &Vec3D| { u.0 += v.0; u.1 += v.1; u.2 += v.2;});
 // impl ops::AddAssign for Vec3D {
 //     fn add_assign(&mut self, v: Self) {
@@ -180,20 +184,19 @@ impl_op_ex!(+= |u: &mut Vec3D, t: f32| { u.0 += t; u.1 += t; u.2 += t;});
 // }
 
 // Subtract methods
-impl_op_ex!(- |u: &Vec3D, v: &Vec3D| -> Vec3D { Vec3D(u.0 - v.0, u.1 - v.1, u.2 - v.2)});
-impl_op_ex_commutative!(- |u: &Vec3D, t: f32| -> Vec3D { Vec3D(u.0 - t, u.1 - t, u.2 - t) });
+impl_op_ex!(-|u: &Vec3D, v: &Vec3D| -> Vec3D { Vec3D(u.0 - v.0, u.1 - v.1, u.2 - v.2) });
+impl_op_ex_commutative!(-|u: &Vec3D, t: f32| -> Vec3D { Vec3D(u.0 - t, u.1 - t, u.2 - t) });
 impl_op_ex!(-= |u: &mut Vec3D, v: &Vec3D| { u.0 -= v.0; u.1 -= v.1; u.2 -= v.2;});
 impl_op_ex!(-= |u: &mut Vec3D, t: f32| { u.0 -= t; u.1 -= t; u.2 -= t;});
 
-// Multiplication methods 
+// Multiplication methods
 
-impl_op_ex!(* |u: &Vec3D, v: &Vec3D| -> Vec3D { Vec3D(u.0 * v.0, u.1 * v.1, u.2 * v.2)});
-impl_op_ex_commutative!(* |u: &Vec3D, t: f32| -> Vec3D { Vec3D(u.0 * t, u.1 * t, u.2 * t) });
+impl_op_ex!(*|u: &Vec3D, v: &Vec3D| -> Vec3D { Vec3D(u.0 * v.0, u.1 * v.1, u.2 * v.2) });
+impl_op_ex_commutative!(*|u: &Vec3D, t: f32| -> Vec3D { Vec3D(u.0 * t, u.1 * t, u.2 * t) });
 impl_op_ex!(*= |u: &mut Vec3D, v: &Vec3D| { u.0 *= v.0; u.1 *= v.1; u.2 *= v.2;});
 impl_op_ex!(*= |u: &mut Vec3D, t: f32| { u.0 *= t; u.1 *= t; u.2 *= t;});
 
-
-// Division methods 
+// Division methods
 
 impl_op_ex!(/ |u: &Vec3D, v: &Vec3D| -> Vec3D { Vec3D(u.0 / v.0, u.1 / v.1, u.2 / v.2)});
 impl_op_ex_commutative!(/ |u: &Vec3D, t: f32| -> Vec3D { Vec3D(u.0 / t, u.1 / t, u.2 / t) });

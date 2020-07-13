@@ -1,5 +1,6 @@
-use crate::vec3d::{Vec3D, Point3D};
 use crate::ray::Ray;
+use crate::utils::rand_in_range;
+use crate::vec3d::{Point3D, Vec3D};
 use std::f32::consts;
 
 pub struct Camera {
@@ -9,10 +10,22 @@ pub struct Camera {
     lower_left_corner: Point3D,
     axes: [Vec3D; 3],
     lens_radius: f32,
+    time0: f32,
+    time1: f32,
 }
 
 impl Camera {
-    pub fn new(origin: Point3D, lookat: Point3D, v_up: Vec3D, vert_fov: f32, aspect_ratio: f32, aperture: f32, focus_dist: f32) -> Camera {
+    pub fn new(
+        origin: Point3D,
+        lookat: Point3D,
+        v_up: Vec3D,
+        vert_fov: f32,
+        aspect_ratio: f32,
+        aperture: f32,
+        focus_dist: f32,
+        time0: f32,
+        time1: f32,
+    ) -> Camera {
         let theta = vert_fov * consts::PI / 180.;
         let h = (theta / 2.).tan();
         let viewport_height = 2. * h;
@@ -22,10 +35,10 @@ impl Camera {
         let u = (v_up.cross(&w)).unit_vector();
         let v = w.cross(&u);
         let axes = [u, v, w];
-        
+
         let horizontal = viewport_width * u * focus_dist;
         let vertical = viewport_height * v * focus_dist;
-        let lower_left_corner = origin - horizontal/2. - vertical/2. - w * focus_dist;
+        let lower_left_corner = origin - horizontal / 2. - vertical / 2. - w * focus_dist;
 
         let lens_radius = aperture / 2.;
 
@@ -36,14 +49,17 @@ impl Camera {
             lower_left_corner,
             axes,
             lens_radius,
+            time0,
+            time1,
         }
     }
     pub fn get_ray(&self, s: f32, t: f32) -> Ray {
         let rd: Vec3D = self.lens_radius * Vec3D::random_in_unit_disk();
         let offset: Vec3D = self.axes[0] * rd.x() + self.axes[1] * rd.y();
         Ray::new(
-            self.origin + offset, 
-            self.lower_left_corner + s*self.horizontal + t*self.vertical - self.origin - offset
+            self.origin + offset,
+            self.lower_left_corner + s * self.horizontal + t * self.vertical - self.origin - offset,
+            rand_in_range(self.time0, self.time1),
         )
     }
 }
